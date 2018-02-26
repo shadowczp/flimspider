@@ -26,4 +26,5 @@ public class BeanConfig {
     public Main main(){
         return new Main();
     }
+
 }

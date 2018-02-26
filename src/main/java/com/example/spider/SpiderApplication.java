@@ -36,16 +36,21 @@ public class SpiderApplication {
      * @throws InterruptedException
      */
     public void start(String[] args) throws InterruptedException {
-//		WebDriver webDriver =webDriverPool.getWebDriver();
-//		webDriver.get("http://www.dy8c.com/");
-//		System.out.println(webDriver.getPageSource());
 
         executorService.execute(new Runnable() {
             @Override
             public void run() {
                 try {
                     WebDriver webDriver = webDriverPool.getWebDriver();
-                    spider.titlePage(webDriver,"http://www.dy8c.com/page/1916/");
+                    boolean flag = false;
+                    flag=spider.titlePage(webDriver,"http://www.dy8c.com");
+                    while (flag == false){
+                        flag=spider.titlePage(webDriver,"http://www.dy8c.com");
+                    }
+                    String url;
+                    while ((url = spider.getUrl())!=null){
+                        System.out.println(url);
+                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
