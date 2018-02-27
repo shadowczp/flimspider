@@ -33,6 +33,7 @@ public class Main {
     public boolean titlePage(WebDriver webDriver,String url) {
         webDriver.get(url);
         try {
+            //获取标题图片来判断是否加载成功了
             WebElement titleImg = webDriver.findElement(By.xpath("//*[@id=\"header\"]/div/a/img"));
         }catch (NoSuchElementException e){
             return false;
