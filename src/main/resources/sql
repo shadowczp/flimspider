@@ -3,7 +3,7 @@ use spider;
 create table dy8c_title_item(
 id varchar(20) primary key,
 detail_url varchar(50),
-update_time date,
+update_time varchar(30),
 title varchar(100),
 note varchar(80),
 img_url varchar(200)
@@ -14,3 +14,5 @@ url_info varchar(200),
 url varchar(2000),
 content_size varchar(30)
 );
+
+insert into dy8c_title_item values('post-100','url100','xianzai','魔法少女','哈哈','asdsa56');

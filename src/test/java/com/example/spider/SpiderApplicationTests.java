@@ -1,9 +1,12 @@
 package com.example.spider;
 
+import com.example.spider.pojo.TitleItem;
+import com.example.spider.service.MainService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -11,6 +14,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 public class SpiderApplicationTests {
 
+    @Autowired
+    private MainService mainService;
 	@Test
 	public void contextLoads() {
 	}
@@ -22,4 +27,9 @@ public class SpiderApplicationTests {
         System.out.println(html);
     }
 
+    @Test
+    public void mybatis(){
+	    TitleItem item =mainService.queryById("post-100");
+	    System.out.println(item.getId()+item.getDetailUrl()+item.getImgUrl()+item.getTitle()+item.getNote());
+    }
 }

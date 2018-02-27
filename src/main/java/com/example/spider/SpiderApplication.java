@@ -1,6 +1,7 @@
 package com.example.spider;
 
 import com.example.spider.util.WebDriverPool;
+import org.mybatis.spring.annotation.MapperScan;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -13,6 +14,7 @@ import org.springframework.context.ApplicationContext;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
+@MapperScan("com.example.spider.mapper")
 @SpringBootApplication
 public class SpiderApplication {
     @Autowired
