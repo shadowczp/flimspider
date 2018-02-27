@@ -43,9 +43,9 @@ public class SpiderApplication {
                 try {
                     WebDriver webDriver = webDriverPool.getWebDriver();
                     boolean flag = false;
-                    flag=spider.titlePage(webDriver,"http://www.dy8c.com");
+                    flag=spider.detailPage(webDriver,"http://www.dy8c.com/entertainment/164505/");
                     while (flag == false){
-                        flag=spider.titlePage(webDriver,"http://www.dy8c.com");
+                        flag=spider.detailPage(webDriver,"http://www.dy8c.com/entertainment/164505/");
                     }
                     String url;
                     while ((url = spider.getUrl())!=null){
