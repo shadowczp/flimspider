@@ -2,6 +2,7 @@ package com.example.spider;
 
 import com.example.spider.pojo.DetailItem;
 import com.example.spider.pojo.TitleItem;
+import com.example.spider.service.MainService;
 import com.example.spider.util.WebDriverPool;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -9,6 +10,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 import java.util.concurrent.BlockingQueue;
@@ -17,16 +19,16 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class Main {
     @Autowired
+    private MainService mainService;
+    @Autowired
     private WebDriverPool webDriverPool;
     @Autowired
     private ExecutorService executorService;
+    @Resource(name = "urls")
     private LinkedBlockingQueue<String> urls;
 
-    public Main() {
-        urls = new LinkedBlockingQueue<>();
-    }
 
-    public String getUrl() throws InterruptedException {
+    public String getUrl(){
         return urls.poll();
     }
 
@@ -62,12 +64,7 @@ public class Main {
                     item.setImgUrl(webElement.findElement(By.xpath("div/a/img")).getAttribute("src"));
                     item.setNote(webElement.findElement(By.xpath("h2/span")).getText());
                     addUrl(item.getDetailUrl());
-                    System.out.println(item.getId());
-                    System.out.println(item.getUpdateTime());
-                    System.out.println(item.getTitle());
-                    System.out.println(item.getDetailUrl());
-                    System.out.println(item.getImgUrl());
-                    System.out.println(item.getNote());
+                    mainService.insertTitle(item);
                 } catch (NoSuchElementException e) {
                     //捕捉内层找不到元素的异常
                     e.printStackTrace();
@@ -79,7 +76,7 @@ public class Main {
             //捕捉外层找不到元素的异常
             e.printStackTrace();
         }
-        System.out.println("ceshi");
+
         return true;
     }
 
@@ -93,13 +90,12 @@ public class Main {
             return false;
         }
         String id = null;
-        try{
+        try {
             WebElement idElement = webDriver.findElement(By.xpath("//*[@id=\"content\"]/div"));
             id = idElement.getAttribute("id");
-        }catch (NoSuchElementException e){
+        } catch (NoSuchElementException e) {
             return false;
         }
-
 
         try {
             List<WebElement> items = webDriver.findElements(By.xpath("//*[starts-with(@class,\"el-s-tr\")]"));
@@ -110,11 +106,7 @@ public class Main {
                     item.setContentSize(webElement.findElement(By.xpath("td[2]")).getText());
                     item.setUrl(webElement.findElement(By.xpath("td[1]/a")).getAttribute("href"));
                     item.setUrlInfo(webElement.findElement(By.xpath("td[1]/a")).getText());
-
-                    System.out.println(item.getId());
-                    System.out.println(item.getContentSize());
-                    System.out.println(item.getUrl());
-                    System.out.println(item.getUrlInfo());
+                    mainService.insertDetail(item);
 
                 } catch (NoSuchElementException e) {
                     //捕捉内层找不到元素的异常
