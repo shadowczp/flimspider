@@ -9,6 +9,8 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -18,6 +20,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class Main {
+    @Value("${retryTimes}")
+    private int retryTimes;
     @Autowired
     private MainService mainService;
     @Autowired
@@ -36,6 +40,7 @@ public class Main {
         urls.put(url);
     }
 
+    //标题主页的爬取逻辑
     public boolean titlePage(WebDriver webDriver, String url) {
         webDriver.get(url);
         try {
@@ -80,6 +85,7 @@ public class Main {
         return true;
     }
 
+    //详情页的爬取逻辑
     public boolean detailPage(WebDriver webDriver, String url) {
 
         webDriver.get(url);
@@ -119,6 +125,40 @@ public class Main {
 
 
         return true;
+    }
+
+    //一个具体的URL的爬取逻辑(空url/标题url/详情页url/其他url)
+    public void work(WebDriver webDriver, String url) {
+        boolean isSuccess = false;
+        int workCount = 0;
+        //1.空url直接返回
+        if (StringUtils.isEmpty(url)) {
+            return;
+        }
+
+        //2.详情页url
+        if (url.contains("dy8c.com/entertainment")) {
+            //爬取失败的时候重试一定次数，最后检查是否成功
+            do {
+                isSuccess = detailPage(webDriver, url);
+                workCount++;
+            } while (!isSuccess && workCount < retryTimes);
+
+        } else if (url.contains("dy8c.com")) {
+            do {
+                isSuccess = titlePage(webDriver, url);
+                workCount++;
+            } while (!isSuccess && workCount < retryTimes);
+        } else {
+            return;
+        }
+        if(isSuccess){
+            return;
+        }else {
+            System.out.println("页面  "+url+"  爬取失败");
+            return;
+        }
+
     }
 
 

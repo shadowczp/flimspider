@@ -50,66 +50,34 @@ public class SpiderApplication {
     public void start(String[] args) throws InterruptedException {
         //给一个起始url
         urls.put("http://www.dy8c.com");
-        String url = null;
-        while((url=urls.poll()) != null){
 
+        while (true) {
+            executorService.execute(() -> {
+                String url = urls.poll();
+                WebDriver webDriver = null;
+                try {
+                    webDriver = webDriverPool.getWebDriver();
+                    System.out.println("当前处理URL: "+url);
+                    spider.work(webDriver, url);
+                    System.out.println("处理URL: "+url+"    完成");
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (webDriver != null) {
+                        try {
+                            webDriverPool.releaseWebDriver(webDriver);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+            //休眠0.5s
+            Thread.sleep(500);
         }
-
-        WebDriver webDriver = webDriverPool.getWebDriver();
-        work(webDriver, url);
-
-        System.out.println("exit");
-
     }
 
     public void work(WebDriver webDriver, String url) {
-        boolean isSuccess = false;
-        int workCount = 0;
-        if (StringUtils.isEmpty(url)) {
-            return;
-        }
-        if (url.contains("dy8c.com/entertainment")) {
-            //爬取失败的时候重试一定次数，最后检查是否成功
-            do {
-                isSuccess = spider.detailPage(webDriver, url);
-                workCount++;
-            } while (!isSuccess && workCount < retryTimes);
-            if(isSuccess){
-                return;
-            }else {
-                System.out.println("页面  "+url+"  爬取失败");
-                return;
-            }
-        } else if (url.contains("dy8c.com")) {
-            do {
-                isSuccess = spider.titlePage(webDriver, url);
-                workCount++;
-            } while (!isSuccess && workCount < retryTimes);
-            if(isSuccess){
-                return;
-            }else {
-                System.out.println("页面  "+url+"  爬取失败");
-                return;
-            }
-        } else {
-            return;
-        }
-        executorService.execute(() -> {
-            try {
-                WebDriver webDriver = webDriverPool.getWebDriver();
-                boolean flag = false;
-                flag = spider.detailPage(webDriver, "http://www.dy8c.com/entertainment/164505/");
-                while (flag == false) {
-                    flag = spider.detailPage(webDriver, "http://www.dy8c.com/entertainment/164505/");
-                }
-                String urlm;
-                while ((urlm = spider.getUrl()) != null) {
-                    System.out.println(urlm);
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
 
-        });
     }
 }
