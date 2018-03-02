@@ -1,5 +1,6 @@
 package com.example.spider.util;
 
+import com.gargoylesoftware.htmlunit.BrowserVersion;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
@@ -12,7 +13,8 @@ public class WebDriverPool {
     public WebDriverPool(int poolSize) {
         queue = new LinkedBlockingQueue<>(poolSize);
         for (int i = 0; i < poolSize; i++) {
-            WebDriver webDriver = new HtmlUnitDriver(true);
+//            WebDriver webDriver = new HtmlUnitDriver(BrowserVersion.FIREFOX_45,false);
+            WebDriver webDriver = new HtmlUnitDriver();
             queue.add(webDriver);
         }
     }

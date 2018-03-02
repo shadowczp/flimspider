@@ -20,7 +20,7 @@ public class BeanConfig {
     }
     @Bean
     public ExecutorService executorService(){
-        ExecutorService cachedThreadPool = Executors.newFixedThreadPool(10);
+        ExecutorService cachedThreadPool = Executors.newFixedThreadPool(poolSize);
         return cachedThreadPool;
     }
     @Bean(name = "urls")

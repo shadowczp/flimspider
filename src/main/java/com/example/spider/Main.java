@@ -51,12 +51,14 @@ public class Main {
         }
         try {
             WebElement nextPage = webDriver.findElement(By.xpath("//*[@id=\"content\"]/div/nav/div/a[contains(@class,\"next\")]"));
-            addUrl(nextPage.getAttribute("href"));
-        } catch (NoSuchElementException e) {
+//            addUrl(nextPage.getAttribute("href"));
 
-        } catch (InterruptedException e) {
+        } catch (NoSuchElementException e) {
             e.printStackTrace();
         }
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
         try {
             List<WebElement> items = webDriver.findElements(By.xpath("//*[@id=\"content\"]/div/div"));
             for (WebElement webElement : items) {
@@ -128,12 +130,12 @@ public class Main {
     }
 
     //一个具体的URL的爬取逻辑(空url/标题url/详情页url/其他url)
-    public void work(WebDriver webDriver, String url) {
+    public boolean work(WebDriver webDriver, String url) {
         boolean isSuccess = false;
         int workCount = 0;
         //1.空url直接返回
         if (StringUtils.isEmpty(url)) {
-            return;
+            return true;
         }
 
         //2.详情页url
@@ -150,13 +152,13 @@ public class Main {
                 workCount++;
             } while (!isSuccess && workCount < retryTimes);
         } else {
-            return;
+            return true;
         }
         if(isSuccess){
-            return;
+            return true;
         }else {
             System.out.println("页面  "+url+"  爬取失败");
-            return;
+            return false;
         }
 
     }

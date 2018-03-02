@@ -50,16 +50,23 @@ public class SpiderApplication {
     public void start(String[] args) throws InterruptedException {
         //给一个起始url
         urls.put("http://www.dy8c.com");
+        for(int i=2;i<1918;i++){
+            urls.put("http://www.dy8c.com/page/"+i+"/");
+        }
 
         while (true) {
             executorService.execute(() -> {
                 String url = urls.poll();
                 WebDriver webDriver = null;
+                boolean flag = false;
                 try {
                     webDriver = webDriverPool.getWebDriver();
-                    System.out.println("当前处理URL: "+url);
-                    spider.work(webDriver, url);
-                    System.out.println("处理URL: "+url+"    完成");
+                    System.out.println("当前处理URL: " + url);
+                    flag = spider.work(webDriver, url);
+                    System.out.println("处理URL: " + url + "    完成");
+                    if (flag == false) {
+                        urls.put(url);
+                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } finally {
@@ -72,8 +79,8 @@ public class SpiderApplication {
                     }
                 }
             });
-            //休眠0.5s
-            Thread.sleep(500);
+            //休眠
+            Thread.sleep(30);
         }
     }
 
