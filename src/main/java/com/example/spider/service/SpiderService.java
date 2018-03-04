@@ -1,8 +1,8 @@
-package com.example.spider;
+package com.example.spider.service;
 
+import com.example.spider.mapper.TitleMapper;
 import com.example.spider.pojo.DetailItem;
 import com.example.spider.pojo.TitleItem;
-import com.example.spider.service.MainService;
 import com.example.spider.util.WebDriverPool;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -10,29 +10,40 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
-
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class Main {
+@Service
+@Transactional
+public class SpiderService {
     @Value("${retryTimes}")
     private int retryTimes;
-    @Autowired
-    private MainService mainService;
-    @Autowired
-    private WebDriverPool webDriverPool;
-    @Autowired
-    private ExecutorService executorService;
+    @Resource
+    private TitleMapper mapper;
     @Resource(name = "urls")
     private LinkedBlockingQueue<String> urls;
+    @Autowired
+    private WebDriverPool webDriverPool;
 
+    public TitleItem queryById(String id) {
+        TitleItem item = mapper.queryById(id);
+        return item;
+    }
 
-    public String getUrl(){
+    public void insertTitle(TitleItem item) {
+        mapper.insertTitle(item);
+    }
+
+    public void insertDetail(DetailItem item) {
+        mapper.insertDetail(item);
+    }
+
+    public String getUrl() {
         return urls.poll();
     }
 
@@ -71,7 +82,7 @@ public class Main {
                     item.setImgUrl(webElement.findElement(By.xpath("div/a/img")).getAttribute("src"));
                     item.setNote(webElement.findElement(By.xpath("h2/span")).getText());
                     addUrl(item.getDetailUrl());
-                    mainService.insertTitle(item);
+                    insertTitle(item);
                 } catch (NoSuchElementException e) {
                     //捕捉内层找不到元素的异常
                     e.printStackTrace();
@@ -114,7 +125,7 @@ public class Main {
                     item.setContentSize(webElement.findElement(By.xpath("td[2]")).getText());
                     item.setUrl(webElement.findElement(By.xpath("td[1]/a")).getAttribute("href"));
                     item.setUrlInfo(webElement.findElement(By.xpath("td[1]/a")).getText());
-                    mainService.insertDetail(item);
+                    insertDetail(item);
 
                 } catch (NoSuchElementException e) {
                     //捕捉内层找不到元素的异常
@@ -154,14 +165,37 @@ public class Main {
         } else {
             return true;
         }
-        if(isSuccess){
+        if (isSuccess) {
             return true;
-        }else {
-            System.out.println("页面  "+url+"  爬取失败");
+        } else {
+            System.out.println("页面  " + url + "  爬取失败");
             return false;
         }
 
     }
 
-
+    public void run() {
+        String url = getUrl();
+        WebDriver webDriver = null;
+        boolean flag = false;
+        try {
+            webDriver = webDriverPool.getWebDriver();
+            System.out.println("当前处理URL: " + url);
+            flag = work(webDriver, url);
+            System.out.println("处理URL: " + url + "    完成");
+            if (flag == false) {
+                addUrl(url);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            if (webDriver != null) {
+                try {
+                    webDriverPool.releaseWebDriver(webDriver);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 }

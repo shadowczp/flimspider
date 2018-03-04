@@ -15,11 +15,12 @@
         select id,detail_url,update_time,title,note,img_url from dy8c_title_item where id = #{id}
     </select>
     <insert id="insertTitle">
-        insert into dy8c_title_item (id,detail_url,update_time,title,note,img_url)
+        replace into dy8c_title_item (id,detail_url,update_time,title,note,img_url)
         values (#{id},#{detailUrl},#{updateTime},#{title},#{note},#{imgUrl})
     </insert>
     <insert id="insertDetail">
-        insert into dy8c_detail_item (id,url_info,url,content_size)
+        replace into dy8c_detail_item (id,url_info,url,content_size)
         values (#{id},#{urlInfo},#{url},#{contentSize})
     </insert>
+
 </mapper>

@@ -1,6 +1,5 @@
 package com.example.spider.config;
 
-import com.example.spider.Main;
 import com.example.spider.util.WebDriverPool;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -14,22 +13,22 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class BeanConfig {
     @Value("${poolSize}")
     private Integer poolSize;
+    @Value("${jsEnable}")
+    private boolean jsEnable;
+
     @Bean
-    public WebDriverPool webDriverPool(){
-        return new WebDriverPool(poolSize);
+    public WebDriverPool webDriverPool() {
+        return new WebDriverPool(poolSize, jsEnable);
     }
+
     @Bean
-    public ExecutorService executorService(){
+    public ExecutorService executorService() {
         ExecutorService cachedThreadPool = Executors.newFixedThreadPool(poolSize);
         return cachedThreadPool;
     }
+
     @Bean(name = "urls")
-    public LinkedBlockingQueue<String> linkedBlockingQueue(){
+    public LinkedBlockingQueue<String> linkedBlockingQueue() {
         return new LinkedBlockingQueue<>();
     }
-    @Bean
-    public Main main(){
-        return new Main();
-    }
-
 }

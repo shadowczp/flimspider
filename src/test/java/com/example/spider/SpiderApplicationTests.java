@@ -2,7 +2,7 @@ package com.example.spider;
 
 import com.example.spider.pojo.DetailItem;
 import com.example.spider.pojo.TitleItem;
-import com.example.spider.service.MainService;
+import com.example.spider.service.SpiderService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,14 +10,21 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class SpiderApplicationTests {
 
     @Autowired
-    private MainService mainService;
+    private SpiderService spiderService;
     private TitleItem titleItem;
     private DetailItem detailItem;
     @Before
@@ -49,17 +56,27 @@ public class SpiderApplicationTests {
 
     @Test
     public void mybatis(){
-	    TitleItem item =mainService.queryById("post-100");
+	    TitleItem item = spiderService.queryById("post-100");
 	    System.out.println(item.getId()+item.getDetailUrl()+item.getImgUrl()+item.getTitle()+item.getNote());
     }
 
     @Test
     public void insertTitle(){
-	    mainService.insertTitle(titleItem);
+	    spiderService.insertTitle(titleItem);
     }
 
     @Test
     public void insertDetail(){
-        mainService.insertDetail(detailItem);
+        spiderService.insertDetail(detailItem);
+    }
+    @Test
+    public void testFile() throws IOException {
+        Resource resource = new ClassPathResource("xpath/xpath.xml");
+        InputStream is = resource.getInputStream();
+        BufferedReader br = new BufferedReader(new InputStreamReader(is));
+        String str = null;
+        while((str=br.readLine()) != null){
+            System.out.println(str);
+        }
     }
 }

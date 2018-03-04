@@ -11,8 +11,9 @@ img_url varchar(200)
 create table dy8c_detail_item(
 id varchar(20),
 url_info varchar(200),
-url varchar(2000),
-content_size varchar(30)
+url varchar(1000),
+content_size varchar(30),
+primary key(id,url)
 );
 
 insert into dy8c_title_item values('post-100','url100','xianzai','魔法少女','哈哈','asdsa56');
